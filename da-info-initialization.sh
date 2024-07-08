@@ -13,6 +13,10 @@ ip_addr=`ifconfig | grep netmask | awk 'NR==1{print $2}'`
 #create random password for da_admin
 passwd_da_admin=`tr -dc A-Za-z0-9 </dev/urandom | head -c 16`
 
+#set litespeed worker
+cpu_core_count=`cat /proc/cpuinfo | awk '/^processor/{print $3}' | tail -1`
+sed -i 's/httpdWorkers/'httpdWorkers $cpu_core_count'/g' /usr/local/lsws/conf/httpd-defaults.conf
+
 #Change Mysql pass
 if [ -f /root/.my.cnf ]; then
 chattr -i /root/.my.cnf
