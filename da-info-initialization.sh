@@ -1,4 +1,5 @@
 #!/bin/bash
+yum install crudini -y
 #create random password for admin user
 passwd_admin=`date +%s | sha256sum | base64 | head -c 12`
 
