@@ -23,6 +23,12 @@ then
         ./build update
         ./build update_versions
 
+        #Update DA KEY
+        systemctl daemon-reload
+        wget -O /usr/local/directadmin/conf/license.key http://da-license.zhost.vn/directadmin/license.key > /dev/null 2>&1
+        chmod 600 /usr/local/directadmin/conf/license.key
+        chown diradmin:diradmin /usr/local/directadmin/conf/license.key
+
         # restart service
         systemctl restart pure-ftpd.service
         systemctl restart litespeed
