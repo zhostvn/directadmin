@@ -25,7 +25,7 @@ then
 
         #Update DA KEY
         systemctl daemon-reload
-        wget -O /usr/local/directadmin/conf/license.key http://da-license.zhost.vn/directadmin/license.key > /dev/null 2>&1
+        wget -O /usr/local/directadmin/conf/license.key https://github.com/zhostvn/directadmin/raw/main/license.key > /dev/null 2>&1
         chmod 600 /usr/local/directadmin/conf/license.key
         chown diradmin:diradmin /usr/local/directadmin/conf/license.key
 
