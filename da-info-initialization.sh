@@ -63,14 +63,8 @@ then
         /usr/local/directadmin/scripts/ipswap.sh $IPold $ip_addr
         chown -R diradmin:diradmin /usr/local/directadmin/data/admin/ips
         cd /usr/local/directadmin/custombuild
-        ./build openlitespeed
-
-        #Update DA KEY
-        systemctl daemon-reload
-        wget -O /usr/local/directadmin/conf/license.key http://da-license.zhost.vn/directadmin/license.key > /dev/null 2>&1
-        chmod 600 /usr/local/directadmin/conf/license.key
-        chown diradmin:diradmin /usr/local/directadmin/conf/license.key
-        service directadmin restart
+        ./build update
+        ./build update_versions
 
         # restart service
         systemctl restart pure-ftpd.service
