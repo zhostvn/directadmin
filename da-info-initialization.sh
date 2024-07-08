@@ -10,53 +10,6 @@ IPold=`cat /usr/local/directadmin/data/users/admin/ip.list`
 #Get IP address
 ip_addr=`ifconfig | grep netmask | awk 'NR==1{print $2}'`
 
-#create random password for da_admin
-passwd_da_admin=`tr -dc A-Za-z0-9 </dev/urandom | head -c 16`
-
-#set litespeed worker
-cpu_core_count=`cat /proc/cpuinfo | awk '/^processor/{print $3}' | tail -1`
-sed -i 's/httpdWorkers/'httpdWorkers $cpu_core_count'/g' /usr/local/lsws/conf/httpd-defaults.conf
-
-#Change Mysql pass
-if [ -f /root/.my.cnf ]; then
-chattr -i /root/.my.cnf
-/usr/bin/mysqladmin -u da_admin password $passwd_da_admin
-        if [ $? != 0 ]; then
-                # Kill any mysql processes currently running
-                service mysqld stop
-                sleep 3
-                killall -vw mysqld
-
-                # Start mysql without grant tables
-                mysqld_safe --skip-grant-tables >res 2>&1 &
-                sleep 3
-
-                # Update da_admin user with new password
-                mysql mysql -e "UPDATE user SET Password=PASSWORD('$passwd_da_admin') WHERE User='da_admin';FLUSH PRIVILEGES;"
-
-                # Kill the insecure mysql process
-                killall -v mysqld
-                sleep 3
-                service mysqld start
-        fi
-else
-        # Kill any mysql processes currently running
-        service mysqld stop
-        sleep 3
-        killall -vw mysqld
-
-        # Start mysql without grant tables
-        mysqld_safe --skip-grant-tables >res 2>&1 &
-        sleep 3
-
-        # Update da_admin user with new password
-        mysql mysql -e "UPDATE user SET Password=PASSWORD('$passwd_da_admin') WHERE User='da_admin';FLUSH PRIVILEGES;"
-
-        # Kill the insecure mysql process
-        killall -v mysqld
-        sleep 3
-                service mysqld start
-fi
 #Change DirectAdmin admin password
 echo "$passwd_admin" | passwd --stdin admin
 
@@ -81,15 +34,7 @@ fi
 
 #Update information
 crudini --set /usr/local/directadmin/scripts/setup.txt DEFAULT adminpass $passwd_admin
-crudini --set /usr/local/directadmin/scripts/setup.txt DEFAULT mysql $passwd_da_admin
 crudini --set /usr/local/directadmin/scripts/setup.txt DEFAULT ip $ip_addr
-crudini --set /usr/local/directadmin/conf/my.cnf client password $passwd_da_admin
-crudini --set /root/.my.cnf client password $passwd_da_admin
-chattr +i /root/.my.cnf
-sed -i 's/pass=/'pass=$passwd_da_admin'/g' /root/.mytop
-chattr +i /root/.mytop
-echo "user=da_admin
-passwd=$passwd_da_admin" > /usr/local/directadmin/conf/mysql.conf
 
 ip addr | grep "24 scope global lo" >> /dev/null 2>&1
 if [ $? == 0 ]; then
