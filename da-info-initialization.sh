@@ -11,7 +11,7 @@ IPold=`cat /usr/local/directadmin/data/users/admin/ip.list`
 ip_addr=`ifconfig | grep netmask | awk 'NR==1{print $2}'`
 
 #create random password for da_admin
-passwd_da_admin=`pwgen -scn 12 1`
+passwd_da_admin=`tr -dc A-Za-z0-9 </dev/urandom | head -c 16`
 
 #Change Mysql pass
 if [ -f /root/.my.cnf ]; then
