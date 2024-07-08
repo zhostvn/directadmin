@@ -54,9 +54,6 @@ Thong tin quan tri DirectAdmin cua ban nhu sau:
 Login_link              : http://$ip_addr:2222
 User_name               : admin
 Password                : $passwd_admin
-Login_mysql             : http://$ip_addr/phpmyadmin/
-Mysql user              : da_admin
-Mysql passwd            : $passwd_da_admin
 
 =============================================================
 
