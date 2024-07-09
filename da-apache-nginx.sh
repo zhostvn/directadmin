@@ -42,7 +42,8 @@ then
         systemctl daemon-reload
         service directadmin restart
         systemctl restart pure-ftpd.service
-        systemctl restart litespeed
+        systemctl restart nginx
+        systemctl restart httpd
 
         # delete log
         cd /var/log/directadmin/
