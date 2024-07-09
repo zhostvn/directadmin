@@ -18,19 +18,30 @@ echo "$passwd_admin" | passwd --stdin admin
 
 if [ $IPold != $ip_addr ]
 then
-        /usr/local/directadmin/scripts/ipswap.sh $IPold $ip_addr
-        chown -R diradmin:diradmin /usr/local/directadmin/data/admin/ips
-        cd /usr/local/directadmin/custombuild
-        ./build update
-        ./build update_versions
+       cd /usr/local/directadmin/scripts
+        ./ipswap.sh $IPold $ip_addr
+        systemctl restart pure-ftpd
+        systemctl restart exim
+        systemctl restart dovecot
 
+        #chown -R diradmin:diradmin /usr/local/directadmin/data/admin/ips
+        cd /usr/local/directadmin/custombuild
+        ./build rewrite_confs
+        #./build update
+        #./build update_versions
+        
         #Update DA KEY
-        systemctl daemon-reload
-        sudo wget -O /usr/local/directadmin/conf/license.key https://github.com/zhostvn/directadmin/raw/main/license.key > /dev/null 2>&1
-        sudo chmod 600 /usr/local/directadmin/conf/license.key
-        sudo chown diradmin:diradmin /usr/local/directadmin/conf/license.key
+        service directadmin stop
+        rm -rf /usr/local/directadmin/conf/license.key
+        wget -O /usr/local/directadmin/conf/license.key https://mirrors.trunglab.com/license/license.key
+        chmod 600 /usr/local/directadmin/conf/license.key
+        chown diradmin:diradmin /usr/local/directadmin/conf/license.key
+        chattr +i /usr/local/directadmin/conf/license.key
+        
 
         # restart service
+        systemctl daemon-reload
+        service directadmin restart
         systemctl restart pure-ftpd.service
         systemctl restart litespeed
 
@@ -39,14 +50,6 @@ then
         rm -rf *
 fi
 
-#Update information
-crudini --set /usr/local/directadmin/scripts/setup.txt DEFAULT adminpass $passwd_admin
-crudini --set /usr/local/directadmin/scripts/setup.txt DEFAULT ip $ip_addr
-
-ip addr | grep "24 scope global lo" >> /dev/null 2>&1
-if [ $? == 0 ]; then
-        ip addr del $IPglobal dev lo
-fi
 #Create Guide text file
 clear
 rm -rf /root/DirectAdmin_information.txt
